@@ -44,9 +44,111 @@ class App extends React.Component {
         })
     }
 
+
+
+    playButton = () => {
+        //Cancels the previous timer and starts again
+        clearInterval(this.intervalId)
+        //This will run the play function every 100 ms
+        this.intervalId = setInterval(this.play, this.speed)
+    }
+
+    pauseButton = () => {
+        clearInterval(this.intervalId)
+    }
+
+    play = () => {
+        let g = this.state.initialGrid
+        let g2 = [...this.state.initialGrid]
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                //Count is incremented based on live neighbors
+                let count = 0;
+
+                if (i > 0) {
+                    //Neighbor right above the current cell
+                    if (g[i - 1][j]) {
+                        count++;
+                    }
+                }
+
+                if (i > 0 && j > 0) {
+                    //diagonal upper left neighbor
+                    if (g[i - 1][j - 1]) {
+                        count++;
+                    }
+                }
+
+                if (i > 0 && j < this.cols - 1) {
+                    //diagonal upper right neighbor
+                    if (g[i - 1][j + 1]) {
+                        count++;
+                    }
+                }
+
+                if (j < this.cols - 1) {
+                    //neighbor on the exact right
+                    if (g[i][j + 1]) {
+                        count++;
+                    }
+                }
+
+                if (j > 0) {
+                    //neighbor on the exact left
+                    if (g[i][j - 1]) {
+                        count++;
+                    }
+                }
+
+                if (i < this.rows - 1) {
+                    //Neighbor right below the current cell
+                    if (g[i + 1][j]) {
+                        count++;
+                    }
+                }
+
+                if (i < this.rows - 1 && j > 0) {
+                    //Neighbor on the diagonal bottom left
+                    if (g[i + 1][j - 1]) {
+                        count++;
+                    }
+                }
+
+                if (i < this.rows - 1 && this.cols - 1) {
+                    //Neighbor on the diagonal bottom right
+                    if (g[i + 1][j + 1]) {
+                        count++;
+                    }
+                }
+
+                //If the current cell is alive and it is surrounded by 
+                // either less than 2 neighbors or more than 2 neighbors
+                // the current cell will die because of underpopulation or overpopulation
+                if (g[i][j] && (count < 2 || count > 3)) {
+                    g2[i][j] = false;
+                }
+
+                //If the current cell is dead and it is surrounded by exactly
+                // 3 neighbors then the current cell will become alive
+                if (!g[i][j] && count === 3) {
+                    g2[i][j] = true;
+                }
+
+            }
+        }
+
+        this.setState({
+            initialGrid: g2,
+            generations: this.state.generations + 1
+
+        })
+    }
+
     componentDidMount() {
         console.log("Component Mounted")
         this.seed()
+        this.playButton()
     }
 
     render() {
