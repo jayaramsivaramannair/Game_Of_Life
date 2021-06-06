@@ -1,14 +1,13 @@
 import React from 'react';
 
-const Box = ({ boxClass, boxId, row, col, selectBox }) => {
-    selectBox = () => {
-        selectBox(row, col)
-    }
+const Box = ({ boxClass, boxId, row, col, boxSelection }) => {
+
     return (
         <div
             className={boxClass}
             id={boxId}
-            onClick={selectBox}
+            onClick={() => { boxSelection(row, col) }}
+
         />
     )
 

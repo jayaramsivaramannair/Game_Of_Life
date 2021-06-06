@@ -17,17 +17,25 @@ class App extends React.Component {
         }
     }
 
+    selectBox = (row, col) => {
+        const gridCopy = [...this.state.initialGrid]
+        gridCopy[row][col] = !gridCopy[row][col]
+        this.setState({
+            initialGrid: gridCopy
+        })
+    }
+
     render() {
         return (
             <div>
                 <h1>Conway's Game of Life</h1>
+                <h2>Stages : {this.state.generations}</h2>
                 <Grid
                     initialGrid={this.state.initialGrid}
                     rows={this.rows}
                     cols={this.cols}
                     selectBox={this.selectBox}
                 />
-                <h2></h2>
             </div>
         )
     }

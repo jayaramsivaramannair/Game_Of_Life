@@ -18,7 +18,7 @@ const Grid = ({ rows, cols, initialGrid, selectBox }) => {
                     boxId={boxId}
                     row={i}
                     col={j}
-                    selectBox={selectBox}
+                    boxSelection={selectBox}
                 />
             )
         }
