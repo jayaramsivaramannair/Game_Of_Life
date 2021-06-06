@@ -19,10 +19,34 @@ class App extends React.Component {
 
     selectBox = (row, col) => {
         const gridCopy = [...this.state.initialGrid]
+        //Creates a copy of the grid and updates the grid based on selection
         gridCopy[row][col] = !gridCopy[row][col]
         this.setState({
             initialGrid: gridCopy
         })
+    }
+
+
+
+    seed = () => {
+        console.log('SEED RAN')
+        const gridCopy = [...this.state.initialGrid];
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                //If the random number turns out be 1
+                if (Math.floor(Math.random() * 4) === 1) {
+                    gridCopy[i][j] = true;
+                }
+            }
+        }
+        this.setState({
+            initialGrid: gridCopy
+        })
+    }
+
+    componentDidMount() {
+        console.log("Component Mounted")
+        this.seed()
     }
 
     render() {
