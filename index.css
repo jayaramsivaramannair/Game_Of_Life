@@ -21,9 +21,7 @@
   
   .center {
     margin: auto;
-    /*
     display: table;
-    */
     margin-top: 10px;
   }
   
@@ -42,9 +40,7 @@
     margin: auto;
     text-align: center;
     width: 50%;
-    /*
     margin-top: 10px;
-    */
   }
   
   h4 {

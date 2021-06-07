@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '../index.css'
 import Grid from './components/Grid.js'
+import Buttons from './components/Buttons.js'
 
 class App extends React.Component {
     constructor() {
@@ -57,6 +58,32 @@ class App extends React.Component {
         clearInterval(this.intervalId)
     }
 
+    clear = () => {
+        let grid = Array(this.rows).fill().map(() => Array(this.cols).fill(false))
+
+        this.setState({
+            initialGrid: grid,
+            generations: 0,
+        })
+        clearInterval(this.intervalId)
+    }
+
+    gridSize = (size) => {
+        switch (size) {
+            case "1":
+                this.cols = 20;
+                this.rows = 10;
+                break;
+            case "2":
+                this.cols = 50;
+                this.rows = 30;
+                break;
+            default:
+                this.cols = 70;
+                this.rows = 50;
+        }
+        this.clear()
+    }
     play = () => {
         let g = this.state.initialGrid
         let g2 = [...this.state.initialGrid]
@@ -148,13 +175,19 @@ class App extends React.Component {
     componentDidMount() {
         console.log("Component Mounted")
         this.seed()
-        this.playButton()
     }
 
     render() {
         return (
             <div>
                 <h1>Conway's Game of Life</h1>
+                <Buttons
+                    playButton={this.playButton}
+                    pauseButton={this.pauseButton}
+                    clear={this.clear}
+                    seed={this.seed}
+                    gridSize={this.gridSize}
+                />
                 <h2>Stages : {this.state.generations}</h2>
                 <Grid
                     initialGrid={this.state.initialGrid}

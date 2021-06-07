@@ -7,7 +7,6 @@ const Box = ({ boxClass, boxId, row, col, boxSelection }) => {
             className={boxClass}
             id={boxId}
             onClick={() => { boxSelection(row, col) }}
-
         />
     )
 
