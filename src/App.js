@@ -1,74 +1,99 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../index.css'
+import Box from './components/Box.js'
 import Grid from './components/Grid.js'
 import Buttons from './components/Buttons.js'
 
+const deepCopy = (arr) => {
+    let copy = [];
+    arr.forEach(elem => {
+        if (Array.isArray(elem)) {
+            //Recursive Call
+            copy.push(deepCopy(elem))
+        } else {
+            copy.push(elem)
+        }
+    })
+
+    return copy
+}
+
 class App extends React.Component {
     constructor() {
-        super()
+        super();
         this.speed = 100;
         this.rows = 30;
-        this.cols = 50;
+        this.cols = 30;
+
         this.state = {
             generations: 0,
-            //Creates an array with a length of 30 where each of those rows will
-            // be filled with cols of size 50
-            initialGrid: Array(this.rows).fill().map(() => Array(this.cols).fill(false))
-        }
+            gridFull: Array(this.rows)
+                .fill()
+                .map(() => Array(this.cols).fill(false))
+        };
+    }
+
+    componentDidMount() {
+        this.seed();
     }
 
     selectBox = (row, col) => {
-        const gridCopy = [...this.state.initialGrid]
-        //Creates a copy of the grid and updates the grid based on selection
-        gridCopy[row][col] = !gridCopy[row][col]
-        this.setState({
-            initialGrid: gridCopy
-        })
-    }
+        const gridCopy = [...this.state.gridFull]
 
-
-
-    seed = () => {
-        console.log('SEED RAN')
-        const gridCopy = [...this.state.initialGrid];
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                //If the random number turns out be 1
-                if (Math.floor(Math.random() * 4) === 1) {
-                    gridCopy[i][j] = true;
+                if (i === row && j === col) {
+                    gridCopy[row][col] = !gridCopy[i][j]
+                    console.log(gridCopy[i][j])
+                    console.log(row, col)
                 }
             }
         }
-        this.setState({
-            initialGrid: gridCopy
-        })
-    }
 
+        this.setState({ ...this.state, gridFull: gridCopy });
+    };
 
+    seed = () => {
+        const gridFull = this.state.gridFull.map(rowArr =>
+            rowArr.map(() => Math.floor(Math.random() * 4) === 1)
+        );
+        this.setState(() => ({ gridFull }));
+    };
 
     playButton = () => {
-        //Cancels the previous timer and starts again
-        clearInterval(this.intervalId)
-        //This will run the play function every 100 ms
-        this.intervalId = setInterval(this.play, this.speed)
-    }
+        clearInterval(this.intervalId);
+        this.intervalId = setInterval(this.play, this.speed);
+    };
 
     pauseButton = () => {
-        clearInterval(this.intervalId)
-    }
+        clearInterval(this.intervalId);
+    };
+
+    slow = () => {
+        this.speed = 1000;
+        this.playButton();
+    };
+
+    fast = () => {
+        this.speed = 100;
+        this.playButton();
+    };
 
     clear = () => {
-        let grid = Array(this.rows).fill().map(() => Array(this.cols).fill(false))
+        const gridFull = Array(this.rows)
+            .fill()
+            .map(() => Array(this.cols).fill(false));
 
-        this.setState({
-            initialGrid: grid,
-            generations: 0,
-        })
-        clearInterval(this.intervalId)
-    }
+        clearInterval(this.intervalId);
 
-    gridSize = (size) => {
+        this.setState(() => ({
+            gridFull,
+            generations: 0
+        }));
+    };
+
+    gridSize = size => {
         switch (size) {
             case "1":
                 this.cols = 20;
@@ -82,121 +107,60 @@ class App extends React.Component {
                 this.cols = 70;
                 this.rows = 50;
         }
-        this.clear()
-    }
+        this.clear();
+    };
+
     play = () => {
-        let g = this.state.initialGrid
-        let g2 = [...this.state.initialGrid]
+        const g = this.state.gridFull;
+        //spread operator cannot be used to clone an array instead the Array.from method must be used
+        //spread operator does not work when we are trying to clone a nested array
+        // Ref: https://www.samanthaming.com/tidbits/35-es6-way-to-clone-an-array/
+        // Ref: https://medium.com/@ziyoshams/deep-copying-javascript-arrays-4d5fc45a6e3e
+        //let g2 = arrayClone(this.state.gridFull);
+        const g2 = deepCopy(this.state.gridFull)
 
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                //Count is incremented based on live neighbors
                 let count = 0;
-
-                if (i > 0) {
-                    //Neighbor right above the current cell
-                    if (g[i - 1][j]) {
-                        count++;
-                    }
-                }
-
-                if (i > 0 && j > 0) {
-                    //diagonal upper left neighbor
-                    if (g[i - 1][j - 1]) {
-                        count++;
-                    }
-                }
-
-                if (i > 0 && j < this.cols - 1) {
-                    //diagonal upper right neighbor
-                    if (g[i - 1][j + 1]) {
-                        count++;
-                    }
-                }
-
-                if (j < this.cols - 1) {
-                    //neighbor on the exact right
-                    if (g[i][j + 1]) {
-                        count++;
-                    }
-                }
-
-                if (j > 0) {
-                    //neighbor on the exact left
-                    if (g[i][j - 1]) {
-                        count++;
-                    }
-                }
-
-                if (i < this.rows - 1) {
-                    //Neighbor right below the current cell
-                    if (g[i + 1][j]) {
-                        count++;
-                    }
-                }
-
-                if (i < this.rows - 1 && j > 0) {
-                    //Neighbor on the diagonal bottom left
-                    if (g[i + 1][j - 1]) {
-                        count++;
-                    }
-                }
-
-                if (i < this.rows - 1 && this.cols - 1) {
-                    //Neighbor on the diagonal bottom right
-                    if (g[i + 1][j + 1]) {
-                        count++;
-                    }
-                }
-
-                //If the current cell is alive and it is surrounded by 
-                // either less than 2 neighbors or more than 2 neighbors
-                // the current cell will die because of underpopulation or overpopulation
-                if (g[i][j] && (count < 2 || count > 3)) {
-                    g2[i][j] = false;
-                }
-
-                //If the current cell is dead and it is surrounded by exactly
-                // 3 neighbors then the current cell will become alive
-                if (!g[i][j] && count === 3) {
-                    g2[i][j] = true;
-                }
-
+                if (i > 0) if (g[i - 1][j]) count++;
+                if (i > 0 && j > 0) if (g[i - 1][j - 1]) count++;
+                if (i > 0 && j < this.cols - 1) if (g[i - 1][j + 1]) count++;
+                if (j < this.cols - 1) if (g[i][j + 1]) count++;
+                if (j > 0) if (g[i][j - 1]) count++;
+                if (i < this.rows - 1) if (g[i + 1][j]) count++;
+                if (i < this.rows - 1 && j > 0) if (g[i + 1][j - 1]) count++;
+                if (i < this.rows - 1 && this.cols - 1) if (g[i + 1][j + 1]) count++;
+                if (g[i][j] && (count < 2 || count > 3)) g2[i][j] = false;
+                if (!g[i][j] && count === 3) g2[i][j] = true;
             }
         }
-
         this.setState({
-            initialGrid: g2,
+            gridFull: g2,
             generations: this.state.generations + 1
-
-        })
-    }
-
-    componentDidMount() {
-        console.log("Component Mounted")
-        this.seed()
-    }
+        });
+    };
 
     render() {
         return (
             <div>
-                <h1>Conway's Game of Life</h1>
+                <h1>The Game of Life</h1>
                 <Buttons
                     playButton={this.playButton}
                     pauseButton={this.pauseButton}
+                    slow={this.slow}
+                    fast={this.fast}
                     clear={this.clear}
                     seed={this.seed}
-                    gridSize={this.gridSize}
                 />
-                <h2>Stages : {this.state.generations}</h2>
                 <Grid
-                    initialGrid={this.state.initialGrid}
+                    gridFull={this.state.gridFull}
                     rows={this.rows}
                     cols={this.cols}
                     selectBox={this.selectBox}
                 />
+                <h2>Generations: {this.state.generations}</h2>
             </div>
-        )
+        );
     }
 }
 

@@ -1,15 +1,19 @@
 import React from 'react';
 
-const Box = ({ boxClass, boxId, row, col, boxSelection }) => {
+const Box = ({ row, col, onBoxSelection, boxClass, id }) => {
+    const selectBox = () => {
+        console.log('box clicked')
+        onBoxSelection(row, col);
+    };
 
     return (
         <div
             className={boxClass}
-            id={boxId}
-            onClick={() => { boxSelection(row, col) }}
-        />
-    )
+            id={id}
+            onClick={selectBox}
 
+        />
+    );
 }
 
 export default Box;

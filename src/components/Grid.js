@@ -1,35 +1,32 @@
 import React from 'react'
 import Box from './Box.js'
 
-const Grid = ({ rows, cols, initialGrid, selectBox }) => {
-    const width = cols * 16
-    const rowsArr = []
-    let boxClass = ""
+const Grid = ({ gridFull, selectBox, cols }) => {
+    let boxClass = "";
+    const rowsArr = gridFull.map((rowArr, rowIdx) =>
+        rowArr.map((item, colIdx) => {
+            const boxId = `${rowIdx}_${colIdx}`;
+            boxClass = gridFull[rowIdx][colIdx] ? "box on" : "box off";
 
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-            let boxId = i + "_" + j
-            boxClass = initialGrid[i][j] ? "box on" : "box off"
-
-            rowsArr.push(
+            return (
                 <Box
                     boxClass={boxClass}
                     key={boxId}
                     boxId={boxId}
-                    row={i}
-                    col={j}
-                    boxSelection={selectBox}
+                    row={rowIdx}
+                    col={colIdx}
+                    onBoxSelection={selectBox}
                 />
-            )
-        }
-    }
+            );
+        })
+    );
+
     return (
-        <div className="grid" style={{ width: width }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 20px)` }}>
             {rowsArr}
         </div>
-    )
-
-}
+    );
+};
 
 
 export default Grid;

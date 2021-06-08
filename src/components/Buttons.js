@@ -1,11 +1,6 @@
 import React from 'react'
 
-const Buttons = ({ playButton, pauseButton, clear, seed, gridSize }) => {
-
-    const handleSelect = (evt) => {
-        gridSize(evt.target.value)
-    }
-
+const Buttons = ({ playButton, pauseButton, clear, slow, fast, seed }) => {
     return (
         <div className="center">
             <button onClick={playButton}>
@@ -17,17 +12,18 @@ const Buttons = ({ playButton, pauseButton, clear, seed, gridSize }) => {
             <button onClick={clear}>
                 Clear
             </button>
+            <button onClick={slow}>
+                Slow
+            </button>
+            <button onClick={fast}>
+                Fast
+            </button>
             <button onClick={seed}>
                 Seed
             </button>
-            <label>Select GridSize</label>
-            <select onChange={handleSelect}>
-                <option value="1">20 x 10</option>
-                <option value="2">50 x 30</option>
-                <option value="3">70 x 50</option>
-            </select>
         </div>
-    )
+    );
 }
+
 
 export default Buttons;
